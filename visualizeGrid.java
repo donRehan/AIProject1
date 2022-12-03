@@ -1,7 +1,7 @@
 package ai_project;
 
 public class CoastGuard {
-
+  //Rows and Colns are reversed*
 	public static String[][] GenGrid(String s) {
 
 		String[] str = s.split(";");
