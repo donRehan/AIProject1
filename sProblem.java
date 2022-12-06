@@ -45,7 +45,7 @@ if (co_ordinates[1] > 0) {
     left.co_ordinates[1]--;
     left.sequence = node.sequence + "left,"; 
     //if passengers are dead. then cancel going in that direction.
-	if(reduceMap(node.ships)){
+	if(reduceMap(left.ships)){
 		//just reduces the number of ship's passengers if possible	
 	}
     //System.out.println(left.co_ordinates[1] + ""+ left.sequence);
@@ -60,7 +60,7 @@ if (co_ordinates[1] < length_width[1] - 1) {
     //increment the x co-ordinate
     right.co_ordinates[1]++;
     right.sequence = node.sequence + "right,"; 
-    if(reduceMap(node.ships)){
+    if(reduceMap(right.ships)){
 		//just reduces the number of ship's passengers if possible	
 	}
     //add the node to the expanded nodes
@@ -75,7 +75,7 @@ if (co_ordinates[0] > 0) {
     //decrement the y co-ordinate
     up.co_ordinates[0]--;
     up.sequence = node.sequence + "up,"; 
-    if(reduceMap(node.ships)){
+    if(reduceMap(up.ships)){
 		//just reduces the number of ship's passengers if possible	
 	}
     //add the node to the expanded nodes
@@ -143,6 +143,7 @@ public static String bf_Search(String problem)
     //Adding the initial state to the queue
     //Create an inital tNode from problem
     tNode initial = new tNode(problem);
+    //add
     Nodes.add(initial);
 
     //while the queue is not empty loop
