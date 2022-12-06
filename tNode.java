@@ -14,6 +14,7 @@ public class tNode {
     int max_passengers; 
     int passengers_carried = 0;
     String sequence = "";
+    public int number = 0;
 
     //hashtable takes the coordinates of the the ship as the key and an integer as the value representing the number of its passengers
     public Hashtable<String, Integer> ships = new Hashtable<String, Integer>();
@@ -29,12 +30,22 @@ public class tNode {
     this.length_width[1] = Integer.parseInt(Split[0].split(",")[0]);
     //System.out.println(this.length_width[0] + " " + this.length_width[1]);
 
+    //Check if I can access element number 5 from the Split array without error
+    //if I can then I will take the value in there and put it into passengers_carried
+    if(Split.length > 5){
+        this.passengers_carried = Integer.parseInt(Split[5]);
+    }
+
     //from the 2nd elemnt in split add into this co-ordinates
     this.co_ordinates[0] = Integer.parseInt(Split[2].split(",")[0]);
     this.co_ordinates[1] = Integer.parseInt(Split[2].split(",")[1]);
     //System.out.println(this.co_ordinates[0] + " " + this.co_ordinates[1]);
     //from the 4th element in split add into this ships
     //split by ,
+    //check if String(Split[4]) is not equal to " "
+	//System.out.println(Split[4]);
+	if(!(Split[4].equals(" "))){
+	//Maybe change it later to character check
     String[] shipl0c = Split[4].split(",");
     //loop through shiploc increment by 3 as each ship has 3 values associated with it
     for (int i = 0; i < shipl0c.length; i += 3) {
@@ -51,21 +62,31 @@ public class tNode {
         this.ships.put(shipString, passengers);
         //System.out.println(ship[0] + " " + ship[1] + " " + passengers);
     }
+	}
     }
 
 
     //method to return a string representing node elements
-    public String toString(){
+	public String toString(){
     //3,4 CoastGuardCarry=97 Boat=1,2 Station=0,1 Ship=3,2,Passengers=65;
     String s = "";
     s += this.length_width[1] + "," + this.length_width[0] + ";";
     s  += this.Split[1] + ";";
     s += this.co_ordinates[0] + "," + this.co_ordinates[1] + ";";
     s   += this.Split[3] + ";";
+	if(this.ships.size() > 0){
     for (String ship : this.ships.keySet()) {
         s += ship.charAt(0) + "," + ship.charAt(2) + "," + this.ships.get(ship) + ",";
         }
+	}
+	else{
+	s += " ;";
+	}
     //s += Blackboxes <<==
+	//Check if split is more than 5 before adding passengers carried
+	if(this.Split.length > 5){
+    s += this.Split[5] + ";";
+	}
     return s;
 
     }
