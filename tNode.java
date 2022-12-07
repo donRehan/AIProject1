@@ -14,12 +14,12 @@ public class tNode {
     int max_passengers; 
     int passengers_carried = 0;
     String sequence = "";
-    public int number = 0;
 
     //hashtable takes the coordinates of the the ship as the key and an integer as the value representing the number of its passengers
     public Hashtable<String, Integer> ships = new Hashtable<String, Integer>();
-    
+    public Hashtable<String, Integer> blackboxes = new Hashtable<String, Integer>();
     //constructor that takes a string as an argument
+
     public tNode(String s) {
 
         //split by ;
@@ -35,6 +35,31 @@ public class tNode {
     if(Split.length > 5){
         this.passengers_carried = Integer.parseInt(Split[5]);
     }
+	
+	//2. To string would be the 6th element
+	if(Split.length > 6){
+	if(!(Split[6].equals(" "))){
+
+	//Maybe change it later to character check
+    String[] b0xl0c = Split[6].split(",");
+    //loop through shiploc increment by 3 as each ship has 3 values associated with it
+    for (int i = 0; i < b0xl0c.length; i += 3) {
+        //create a new array to store the co-ordinates of the ship
+        int[] l0c = new int[2];
+        //store the co-ordinates of the ship
+        l0c[0] = Integer.parseInt(b0xl0c[i]);
+        l0c[1] = Integer.parseInt(b0xl0c[i + 1]);
+        //Convert ship array to a string
+        String b0xString = l0c[0] + "," + l0c[1];
+        //store the number of passengers in the ship
+        int health = Integer.parseInt(b0xl0c[i + 2]);
+        //add the ship and its passengers to the hashtable
+        this.blackboxes.put(b0xString, health);
+        //System.out.println(ship[0] + " " + ship[1] + " " + passengers);
+    }
+	}
+
+	}
 
     //from the 2nd elemnt in split add into this co-ordinates
     this.co_ordinates[0] = Integer.parseInt(Split[2].split(",")[0]);

@@ -10,7 +10,7 @@ public class sProblem {
 //If the value of a key is 0, it is removed from the hashmap
 //If the hashmap is empty, the function returns false
 
-public static boolean reduceMap(Hashtable<String, Integer> map) {
+public static boolean reduceMap(Hashtable<String, Integer> map, Hashtable<String, Integer> boxx) {
 	if (map.isEmpty()) {
 		return false;
 	}
@@ -18,6 +18,23 @@ public static boolean reduceMap(Hashtable<String, Integer> map) {
 		int value = map.get(key);
 		if (value == 1) {
 			//create blackbox
+			//add the same key with a value of 20 to the blackbox hashmap of boxx
+			boxx.put(key, 20);
+			map.remove(key);
+		} else {
+			map.put(key, value - 1);
+		}
+	}
+	return true;
+}
+
+public static boolean reduceBox(Hashtable<String, Integer> map) {
+	if (map.isEmpty()) {
+		return false;
+	}
+	for (String key : map.keySet()) {
+		int value = map.get(key);
+		if (value == 1) {
 			map.remove(key);
 		} else {
 			map.put(key, value - 1);
@@ -45,8 +62,11 @@ if (co_ordinates[1] > 0) {
     left.co_ordinates[1]--;
     left.sequence = node.sequence + "left,"; 
     //if passengers are dead. then cancel going in that direction.
-	if(reduceMap(left.ships)){
+	if(reduceMap(left.ships,left.blackboxes)){
 		//just reduces the number of ship's passengers if possible	
+	}
+	if(reduceBox(left.blackboxes)){
+		//reduce the number of blackbox's health if possible
 	}
     //System.out.println(left.co_ordinates[1] + ""+ left.sequence);
     //add the node to the expanded nodes
@@ -60,8 +80,11 @@ if (co_ordinates[1] < length_width[1] - 1) {
     //increment the x co-ordinate
     right.co_ordinates[1]++;
     right.sequence = node.sequence + "right,"; 
-    if(reduceMap(right.ships)){
+    if(reduceMap(right.ships,right.blackboxes)){
 		//just reduces the number of ship's passengers if possible	
+	}
+	if(reduceBox(right.blackboxes)){
+
 	}
     //add the node to the expanded nodes
     //System.out.println(right.co_ordinates[1] + ""+ right.sequence);
@@ -75,8 +98,11 @@ if (co_ordinates[0] > 0) {
     //decrement the y co-ordinate
     up.co_ordinates[0]--;
     up.sequence = node.sequence + "up,"; 
-    if(reduceMap(up.ships)){
+    if(reduceMap(up.ships,up.blackboxes)){
 		//just reduces the number of ship's passengers if possible	
+	}
+	if(reduceBox(up.blackboxes)){
+
 	}
     //add the node to the expanded nodes
     //System.out.println(up.co_ordinates[0] + ""+ up.sequence);
@@ -90,10 +116,16 @@ if (co_ordinates[0] < length_width[0] - 1) {
     //increment the y co-ordinate
     down.co_ordinates[0]++;
     down.sequence =  node.sequence +"down,"; 
-    if(reduceMap(down.ships)){
+    if(reduceMap(down.ships,down.blackboxes)){
 		//just reduces the number of ship's passengers if possible	
 	}
-	down.number = down.ships.get("3,2");
+
+	if(reduceBox(down.blackboxes)){
+
+	}
+	//add the node to the expanded nodes
+	//System.out.println(down.co_ordinates[0] + ""+ down.sequence);
+	//down.number = down.ships.get("3,2");
     //add the node to the expanded nodes
     //System.out.println(down.co_ordinates[0] + ""+ down.sequence);
     expanded.add(down);
@@ -123,7 +155,7 @@ public static String goalTest(tNode node) {
         if(diff >= vall){
             node.passengers_carried += vall;
             //node.ships.remove(shipString);
-            return node.sequence + " " + node.number;
+            return node.sequence;
         }
         else{
             //replace the value by value - the diff
