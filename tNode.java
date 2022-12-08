@@ -12,13 +12,70 @@ public class tNode {
     int max_passengers; 
     int passengers_carried = 0;
     String sequence = "";
-	int retrieve = 0;
+	int boxescarried = 0;
+    int dead = 0;
 
     //hashtable takes the coordinates of the the ship as the key and an integer as the value representing the number of its passengers
     public Hashtable<String, Integer> ships = new Hashtable<String, Integer>();
     public Hashtable<String, Integer> blackboxes = new Hashtable<String, Integer>();
 	//stations is a hashtable with String as a key and a boolean as a value
     public Hashtable<String, Boolean> stations = new Hashtable<String, Boolean>();
+
+    public void retrieve(){
+        //if the coordinates are return a blackbox then remove it from the blackbox hashmap
+        String coordinates = this.co_ordinates[0] + "," + this.co_ordinates[1];
+        if (this.blackboxes.containsKey(coordinates)) {
+            this.blackboxes.remove(coordinates);
+            this.boxescarried++;
+            this.sequence += "retrieve,";
+        }
+    }
+
+    public void carrypassengers(String shipString){
+        int vall = this.ships.get(shipString);
+        int diff = this.max_passengers - this.passengers_carried;
+        if(diff >= vall){
+            this.passengers_carried += vall;
+            //remove this ship from the hashmap
+            this.ships.remove(shipString);
+            //add a blackbox to the blackbox hashmap
+            this.blackboxes.put(shipString, 19);
+        }
+        else{
+            //replace the value by value - the diff
+            this.ships.put(shipString, vall - diff);
+            this.passengers_carried = this.max_passengers;
+        }
+}
+
+public void pickup(){
+    String shipString = this.co_ordinates[0] + "," + this.co_ordinates[1];
+    //if I am on a ship then carry the passengers
+    if(this.ships.containsKey(shipString) == true){
+		this.carrypassengers(shipString);
+		this.sequence += "pickup,";
+    }
+}
+
+public void drop(){
+	String stationString = this.co_ordinates[0] + "," + this.co_ordinates[1];
+	//if I am on a station then drop off the passengers
+	if(this.stations.containsKey(stationString) == true){
+		this.passengers_carried = 0;
+		this.sequence += "drop,";
+	}
+}
+
+//add this into the main code
+public void performAction()
+{
+	//check if I am in a station
+	this.drop();
+	//Check if the node is containing a ship
+	this.pickup();
+	//Check if the node is in a blackbox cell
+	this.retrieve();
+}
 
     //constructor that takes a string as an argument 
     public tNode(String s) {
@@ -53,7 +110,7 @@ public class tNode {
         //Convert ship array to a string
         String b0xString = l0c[0] + "," + l0c[1];
         boolean health = true;
-        this.blackboxes.put(b0xString, health);
+        this.stations.put(b0xString, health);
     }
 
 	//2. To string would be the 6th element

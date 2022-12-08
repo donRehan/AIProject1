@@ -1,9 +1,7 @@
-// Switch goal each time. If passengers is full then Goal is now station. Else goal is to get to a ship. Any available ship. 
-  => Checkfor pickup in a function , then call check for drop , then call carry passengers. Each which affects the given node's flag and sequence by writing what it does.
-// Check Pickup :: When u are on a place u pickup a ship and it becomes 0 u take the boxx too
-//Check goal
-If no more ships , no more box then return node. Sequence
-Done.
+NOTES::
+Error message needs to be fixed.
+Return the number of deaths , number of boxes , nodes
 
-String sequeunce_this far = “”
-//Double check anything more.
+
+=> Improvements for later ::
+We can just copy the ships from the original node's  ships since that never changes throughout the entire code.
