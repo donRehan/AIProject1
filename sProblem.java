@@ -19,7 +19,7 @@ public static boolean reduceMap(Hashtable<String, Integer> map, Hashtable<String
 		if (value == 1) {
 			//create blackbox
 			//add the same key with a value of 20 to the blackbox hashmap of boxx
-			boxx.put(key, 20);
+			boxx.put(key, 19);
 			map.remove(key);
 		} else {
 			map.put(key, value - 1);
@@ -41,6 +41,57 @@ public static boolean reduceBox(Hashtable<String, Integer> map) {
 		}
 	}
 	return true;
+}
+
+public retrieve(){
+	//if the coordinates are return a blackbox then remove it from the blackbox hashmap
+	String coordinates = this.co_ordinates[0] + "," + this.co_ordinates[1];
+	if (this.blackboxes.containsKey(coordinates)) {
+		this.blackboxes.remove(coordinates);
+		this.boxescarried++;
+		this.sequence += "retrieve,";
+	}
+}
+
+public carrypassengers(String shipString){
+        int vall = this.ships.get(shipString);
+        int diff = this.max_passengers - this.passengers_carried;
+        if(diff >= vall){
+            this.passengers_carried += vall;
+        }
+        else{
+            //replace the value by value - the diff
+            this.ships.put(shipString, vall - diff);
+            this.passengers_carried = this.max_passengers;
+        }
+}
+
+public pickup(){
+    String shipString = this.co_ordinates[0] + "," + this.co_ordinates[1];
+    //if I am on a ship then carry the passengers
+    if(this.ships.containsKey(shipString) != null){
+		this.carrypassengers(shipString);
+		this.sequence += "pickup,";
+    }
+}
+
+public drop(){
+	String stationString = this.co_ordinates[0] + "," + this.co_ordinates[1];
+	//if I am on a station then drop off the passengers
+	if(this.stations.containsKey(stationString) != null){
+		this.passengers_carried = 0;
+		this.sequence += "drop,";
+	}
+}
+
+public performAction()
+{
+	//Check if the node is in a blackbox cell
+	this.retrieve();
+	//Check if the node is containing a ship
+	this.pickup();
+	//check if I am in a station
+	this.drop();
 }
 
 //Validate and return the expanded nodes that can be expanded
@@ -141,34 +192,6 @@ if (expanded.isEmpty()) {
 
 }
 
-//Create goalTest Method too.
-//return String if goal is reached
-//return null if goal is not reached
-public static String goalTest(tNode node) {
-    //get the node's co-ordinates , check if they return a value in the ships
-    int[] co_ordinates = node.co_ordinates;
-    String shipString = co_ordinates[0] + "," + co_ordinates[1];
-    ///pass co_ordinates to the ships hashtable to get value
-    if(node.ships.get(shipString) != null){
-        int vall = node.ships.get(shipString);
-        int diff = node.max_passengers - node.passengers_carried;
-        if(diff >= vall){
-            node.passengers_carried += vall;
-            //node.ships.remove(shipString);
-            return node.sequence;
-        }
-        else{
-            //replace the value by value - the diff
-            node.ships.put(shipString, vall - diff);
-            node.passengers_carried = node.max_passengers;
-            return "You made it ! , " + node.passengers_carried + " passengers carried"+ " new value for " + shipString + " is " + node.ships.get(shipString);
-        }
-    }
-   
-    return null;
-
-}
-
 public static String bf_Search(String problem)
 {
     Queue<Object> Nodes = new LinkedList<Object>();
@@ -181,34 +204,18 @@ public static String bf_Search(String problem)
     //while the queue is not empty loop
     while(!Nodes.isEmpty())
     {
-    //later this will be cNode and the first tNode is going to be before the loop
     tNode node = (tNode) Nodes.remove();
-	//System.out.println(node.toString());
-    //Add the steps taken this far.
-    //solution = solution + node.sequence;
-    //System.out.println("sequence: " + solution);
-    //print the co_ordiantes
-    //System.out.println("co_ordinates: " + node.co_ordinates[0] + "," + node.co_ordinates[1]);
-    //Call goal test on the node
-    String goal = goalTest(node);
+
+	//Needs to be only goal checking happening here. That is if no passengers nor blackboxes are left then return the sequence
+    //String goal = goalTest(node);
     if(goal != null)
     {
-        //if goal test is true then return the solution
-        // => create solution the right format.
-		//System.out.println(node.passengers_carried);
-		//show the number of passengers in the ship
-        return goal;
+       return goal;
     }
 
-
-	
-
-    //if goal test is false then expand the node
-    //expand the node
     ArrayList<tNode> children = expand(node);
 
-    //if the node is not null then add the children to the queue
-    if(children != null)
+        if(children != null)
     {
         for(int i = 0; i < children.size(); i++)
         {

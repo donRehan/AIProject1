@@ -1,7 +1,5 @@
 import java.util.Hashtable;
 
-//to be cleaned before submission
-
 //3,4 CoastGuardCarry=97 Boat=1,2 Station=0,1 Ship=3,2,Passengers=65;
 //always subtract 1 from the co ordinates as the documentation is wrong
 
@@ -14,12 +12,15 @@ public class tNode {
     int max_passengers; 
     int passengers_carried = 0;
     String sequence = "";
+	int retrieve = 0;
 
     //hashtable takes the coordinates of the the ship as the key and an integer as the value representing the number of its passengers
     public Hashtable<String, Integer> ships = new Hashtable<String, Integer>();
     public Hashtable<String, Integer> blackboxes = new Hashtable<String, Integer>();
-    //constructor that takes a string as an argument
+	//stations is a hashtable with String as a key and a boolean as a value
+    public Hashtable<String, Boolean> stations = new Hashtable<String, Boolean>();
 
+    //constructor that takes a string as an argument 
     public tNode(String s) {
 
         //split by ;
@@ -29,13 +30,32 @@ public class tNode {
     this.length_width[0] = Integer.parseInt(Split[0].split(",")[1]);
     this.length_width[1] = Integer.parseInt(Split[0].split(",")[0]);
     //System.out.println(this.length_width[0] + " " + this.length_width[1]);
+	
+	//code to store the ship locations 
+
 
     //Check if I can access element number 5 from the Split array without error
     //if I can then I will take the value in there and put it into passengers_carried
+	//could be optimized way better
     if(Split.length > 5){
         this.passengers_carried = Integer.parseInt(Split[5]);
     }
 	
+
+	String[] stl0c = Split[3].split(",");
+    //loop through shiploc increment by 3 as each ship has 3 values associated with it
+    for (int i = 0; i < stl0c.length; i += 2) {
+        //create a new array to store the co-ordinates of the ship
+        int[] l0c = new int[2];
+        //store the co-ordinates of the ship
+        l0c[0] = Integer.parseInt(stl0c[i]);
+        l0c[1] = Integer.parseInt(stl0c[i + 1]);
+        //Convert ship array to a string
+        String b0xString = l0c[0] + "," + l0c[1];
+        boolean health = true;
+        this.blackboxes.put(b0xString, health);
+    }
+
 	//2. To string would be the 6th element
 	if(Split.length > 6){
 	if(!(Split[6].equals(" "))){
