@@ -1,5 +1,6 @@
 import java.util.Hashtable;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 //3,4 CoastGuardCarry=97 Boat=1,2 Station=0,1 Ship=3,2,Passengers=65;
 //always subtract 1 from the co ordinates as the documentation is wrong
@@ -36,36 +37,45 @@ public class tNode {
         if (this.ships.isEmpty()) {
             return false;
         }
-        for (String key : ships.keySet()) {
-            int value = ships.get(key);
+        Iterator<String> it = this.ships.keySet().iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            int value = this.ships.get(key);
             if (value == 1) {
-                //create blackbox
-                //add the same key with a value of 20 to the blackbox hashmap of boxx
                 this.blackboxes.put(key, 19);
-                this.dead++; 
-                this.ships.remove(key);
+                this.dead++;
+                it.remove();
             } else {
-                this.ships.put(key, value - 1);
-                this.dead++; 
+                this.ships.replace(key, value - 1);
             }
         }
         return true;
     }
 
-    public boolean reduceBox() {
-        if (this.blackboxes.isEmpty()) {
+    //boolean reduceBox() that uses an iterator to reduce the value of each blackbox by 1 and removes it if the value is 0
+    public boolean reduceBox()
+    {
+        if(this.blackboxes.isEmpty())
+        {
             return false;
         }
-        for (String key : this.blackboxes.keySet()) {
+        Iterator<String> it = this.blackboxes.keySet().iterator();
+        while(it.hasNext())
+        {
+            String key = it.next();
             int value = this.blackboxes.get(key);
-            if (value == 1) {
-                this.blackboxes.remove(key);
-            } else {
-                this.blackboxes.put(key, value - 1);
+            if(value == 1)
+            {
+                it.remove();
+            }
+            else
+            {
+                this.blackboxes.replace(key, value - 1);
             }
         }
         return true;
     }
+    
 
     public ArrayList expand() {
         //create a new arraylist to store the expanded nodes

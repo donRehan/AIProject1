@@ -17,13 +17,14 @@ java -XX:+PrintFlagsFinal -version | grep -iE 'heapsize|permsize|threadstacksize
 => Improvements for later ::
 We can just copy the ships from the original node's  ships since that never changes throughout the entire code.
 
-//q: what is  java.lang.OutOfMemoryError: Java heap space error ?
-//a: it means that the heap memory is full and the program can't allocate more memory for the new object.
-//q: How can I solve it ?
-//a: increase the heap size by using the -Xmx flag when running the program.
-//q: any ideas on how to opimitze my code to not fill the heap ?
-//a: use the same ships array for all the nodes instead of creating a new one for each node.
-
 //REPORT ::
 Memory issue  java.lang.OutOfMemoryError: Java heap space in df search.
 How did we fix it 
+
+>> Create a hashtable with the ships , blackboxes , passengers carried and number of boxes, and the coordinates.
+
+q: How can I silence Exception in thread "main" java.util.ConcurrentModificationException
+?
+a: Use an iterator instead of a for loop.
+q: What does an iteretor mean ?
+a: It's a class that allows you to loop through a collection, remove elements during the iteration, and safely handle concurrent modification.
