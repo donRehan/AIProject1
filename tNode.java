@@ -1,4 +1,5 @@
 import java.util.Hashtable;
+import java.util.ArrayList;
 
 //3,4 CoastGuardCarry=97 Boat=1,2 Station=0,1 Ship=3,2,Passengers=65;
 //always subtract 1 from the co ordinates as the documentation is wrong
@@ -30,6 +31,132 @@ public class tNode {
             this.sequence += "retrieve,";
         }
     }
+
+    public boolean reduceMap() {
+        if (this.ships.isEmpty()) {
+            return false;
+        }
+        for (String key : ships.keySet()) {
+            int value = ships.get(key);
+            if (value == 1) {
+                //create blackbox
+                //add the same key with a value of 20 to the blackbox hashmap of boxx
+                this.blackboxes.put(key, 19);
+                this.dead++; 
+                this.ships.remove(key);
+            } else {
+                this.ships.put(key, value - 1);
+                this.dead++; 
+            }
+        }
+        return true;
+    }
+
+    public boolean reduceBox() {
+        if (this.blackboxes.isEmpty()) {
+            return false;
+        }
+        for (String key : this.blackboxes.keySet()) {
+            int value = this.blackboxes.get(key);
+            if (value == 1) {
+                this.blackboxes.remove(key);
+            } else {
+                this.blackboxes.put(key, value - 1);
+            }
+        }
+        return true;
+    }
+
+    public ArrayList expand() {
+        //create a new arraylist to store the expanded nodes
+        ArrayList<tNode> expanded = new ArrayList<tNode>();
+        //up , Check that the y co-ordinate is greater than 0
+        if (this.co_ordinates[0] > 0) {
+            //create a new node
+            tNode up = new tNode(this.toString());
+            //decrement the y co-ordinate
+            up.co_ordinates[0]--;
+            up.sequence = this.sequence + "up,"; 
+            if(up.reduceMap()){
+                //just reduces the number of ship's passengers if possible	
+            }
+            if(up.reduceBox()){
+        
+            }
+            up.performAction();
+            //add the node to the expanded nodes
+            //System.out.println(up.co_ordinates[0] + ""+ up.sequence);
+            expanded.add(up);
+        }
+        //down , Check that the y co-ordinate is less than the height
+        if (this.co_ordinates[0] < this.length_width[0] - 1) {
+            //create a new node
+            tNode down = new tNode(this.toString());
+            //increment the y co-ordinate
+            down.co_ordinates[0]++;
+            down.sequence =  this.sequence +"down,"; 
+            if(down.reduceMap()){
+                //just reduces the number of ship's passengers if possible	
+            }
+            if(down.reduceBox()){
+        
+            }
+            down.performAction();
+            //add the node to the expanded nodes
+            //System.out.println(down.co_ordinates[0] + ""+ down.sequence);
+            //down.number = down.ships.get("3,2");
+            //add the node to the expanded nodes
+            //System.out.println(down.co_ordinates[0] + ""+ down.sequence);
+            expanded.add(down);
+        }
+        //Check left , right , up , down
+        //left , Check that the x co-ordinate is greater than 0 
+        if (this.co_ordinates[1] > 0) {
+            //create a new node
+            tNode left = new tNode(this.toString());
+            //decrement the x co-ordinate
+            left.co_ordinates[1]--;
+            left.sequence = this.sequence + "left,"; 
+            //if passengers are dead. then cancel going in that direction.
+            if(left.reduceMap()){
+                //just reduces the number of ship's passengers if possible	
+            }
+            if(left.reduceBox()){
+                //reduce the number of blackbox's health if possible
+            }
+            left.performAction();
+            //System.out.println(left.co_ordinates[1] + ""+ left.sequence);
+            //add the node to the expanded nodes
+            expanded.add(left);
+        }
+        
+        //right , Check that the x co-ordinate is less than the width
+        if (this.co_ordinates[1] < this.length_width[1] - 1) {
+            //create a new node
+            tNode right = new tNode(this.toString());
+            //increment the x co-ordinate
+            right.co_ordinates[1]++;
+            right.sequence = this.sequence + "right,"; 
+            if(right.reduceMap()){
+                //just reduces the number of ship's passengers if possible	
+            }
+            if(right.reduceBox()){
+        
+            }
+            right.performAction();
+            //add the node to the expanded nodes
+            //System.out.println(right.co_ordinates[1] + ""+ right.sequence);
+            expanded.add(right);
+        }
+        //check if expanded is empty
+        if (expanded.isEmpty()) {
+            //return null
+            return null;
+        } 
+            //return the expanded nodes
+            return expanded;
+        
+        }
 
     public void carrypassengers(String shipString){
         int vall = this.ships.get(shipString);

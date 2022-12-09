@@ -1,7 +1,29 @@
 NOTES::
-Error message needs to be fixed.
+NO solution message needs to be made like the one in the assignment.
 Return the number of deaths , number of boxes , nodes
+fe 7aga esmha visualVM ze plugin kda bysht8l 3la eclipse w a3tkd 3”- intelliji kman bs ana 3rft ash8lh 3la eclipse bs 
+by monitor el cpu w el memory across el java program el sh8al
 
+Compare the hashmaps of the ships , of the black boxes , passengers carried and the number of boxes carried, cOordinates.
+Number of deaths.
+
+problem would be with the number of deaths then. Should be different in all 
+Increase the heap size too 
+Compareto , Hashcode
+
+FOR RAM / PERFORMANCE PART OF THE REPORT ::
+java -XX:+PrintFlagsFinal -version | grep -iE 'heapsize|permsize|threadstacksize'
 
 => Improvements for later ::
 We can just copy the ships from the original node's  ships since that never changes throughout the entire code.
+
+//q: what is  java.lang.OutOfMemoryError: Java heap space error ?
+//a: it means that the heap memory is full and the program can't allocate more memory for the new object.
+//q: How can I solve it ?
+//a: increase the heap size by using the -Xmx flag when running the program.
+//q: any ideas on how to opimitze my code to not fill the heap ?
+//a: use the same ships array for all the nodes instead of creating a new one for each node.
+
+//REPORT ::
+Memory issue  java.lang.OutOfMemoryError: Java heap space in df search.
+How did we fix it 
