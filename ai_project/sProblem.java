@@ -1,3 +1,4 @@
+package ai_project;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.ArrayList;
@@ -12,6 +13,20 @@ public class sProblem {
 
 //Validate and return the expanded nodes that can be expanded
 
+public static int nodes(String sequence)
+{
+    String[] actions = sequence.split(",");
+    //loop through the actions and count the number of nodes
+    int nodes = 1;
+    for(String action : actions)
+    {
+        if(action.equals("up") || action.equals("down") || action.equals("left") || action.equals("right") || action.equals("4") || action.equals("5") || action.equals("6") || action.equals("7") || action.equals("8") || action.equals("9"))
+        {
+            nodes++;
+        }   
+    }
+    return nodes;
+}
 
 public static String bf_Search(String problem)
 {
@@ -30,11 +45,11 @@ public static String bf_Search(String problem)
     while(!Nodes.isEmpty())
     {
     tNode node = (tNode) Nodes.remove();
-
     //Check for the goal and do actions on the current node.
     if(node.ships.isEmpty() && node.blackboxes.isEmpty()  && node.stations.containsKey(node.co_ordinates[0] + "," + node.co_ordinates[1])) 
         {
-            return node.sequence;
+            //remove node.sequence last character
+            return node.sequence.substring(0, node.sequence.length() - 1)+ ";"+ node.passengerstotal  +";"  + node.boxescarried + ";" + nodes(node.sequence);
         }
     ArrayList<tNode> children = node.expand();
 
@@ -73,7 +88,7 @@ public static String df_Search(String problem)
     //Check for the goal and do actions on the current node.
     if(node.ships.isEmpty() && node.blackboxes.isEmpty()  && node.stations.containsKey(node.co_ordinates[0] + "," + node.co_ordinates[1])) 
         {
-            return node.sequence;
+            return node.sequence.substring(0, node.sequence.length() - 1)+ ";"+ node.passengerstotal  +";"  + node.boxescarried + ";" + nodes(node.sequence);
         }
     ArrayList<tNode> children = node.expand();
 

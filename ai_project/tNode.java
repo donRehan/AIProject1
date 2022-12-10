@@ -1,3 +1,4 @@
+package ai_project;
 import java.util.Hashtable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ public class tNode {
     String sequence = "";
 	int boxescarried = 0;
     int dead = 0;
+    public int passengerstotal = 0;
 
     //hashtable takes the coordinates of the the ship as the key and an integer as the value representing the number of its passengers
     public Hashtable<String, Integer> ships = new Hashtable<String, Integer>();
@@ -23,7 +25,7 @@ public class tNode {
 	//stations is a hashtable with String as a key and a boolean as a value
     public Hashtable<String, Boolean> stations = new Hashtable<String, Boolean>();
 
-    public void retrieve(){
+    public synchronized  void retrieve(){
         //if the coordinates are return a blackbox then remove it from the blackbox hashmap
         String coordinates = this.co_ordinates[0] + "," + this.co_ordinates[1];
         if (this.blackboxes.containsKey(coordinates)) {
@@ -33,10 +35,8 @@ public class tNode {
         }
     }
 
-    public boolean reduceMap() {
-        if (this.ships.isEmpty()) {
-            return false;
-        }
+    public synchronized void reduceMap() {
+        if (!(this.ships.isEmpty())) {
         Iterator<String> it = this.ships.keySet().iterator();
         while (it.hasNext()) {
             String key = it.next();
@@ -49,16 +49,14 @@ public class tNode {
                 this.ships.replace(key, value - 1);
             }
         }
-        return true;
+    }
     }
 
     //boolean reduceBox() that uses an iterator to reduce the value of each blackbox by 1 and removes it if the value is 0
-    public boolean reduceBox()
+    public synchronized void reduceBox()
     {
-        if(this.blackboxes.isEmpty())
+        if(!(this.blackboxes.isEmpty()))
         {
-            return false;
-        }
         Iterator<String> it = this.blackboxes.keySet().iterator();
         while(it.hasNext())
         {
@@ -73,7 +71,7 @@ public class tNode {
                 this.blackboxes.replace(key, value - 1);
             }
         }
-        return true;
+        }
     }
     
 
@@ -87,12 +85,12 @@ public class tNode {
             //decrement the y co-ordinate
             up.co_ordinates[0]--;
             up.sequence = this.sequence + "up,"; 
-            if(up.reduceMap()){
-                //just reduces the number of ship's passengers if possible	
-            }
-            if(up.reduceBox()){
-        
-            }
+            //added blackboxes
+            up.boxescarried = this.boxescarried;
+            up.dead = this.dead;
+            up.passengerstotal = this.passengerstotal;
+            up.reduceMap();
+            up.reduceBox();
             up.performAction();
             //add the node to the expanded nodes
             //System.out.println(up.co_ordinates[0] + ""+ up.sequence);
@@ -105,12 +103,11 @@ public class tNode {
             //increment the y co-ordinate
             down.co_ordinates[0]++;
             down.sequence =  this.sequence +"down,"; 
-            if(down.reduceMap()){
-                //just reduces the number of ship's passengers if possible	
-            }
-            if(down.reduceBox()){
-        
-            }
+            down.boxescarried = this.boxescarried;
+            down.dead = this.dead;
+            down.passengerstotal = this.passengerstotal;
+            down.reduceMap();
+            down.reduceBox();
             down.performAction();
             //add the node to the expanded nodes
             //System.out.println(down.co_ordinates[0] + ""+ down.sequence);
@@ -128,12 +125,11 @@ public class tNode {
             left.co_ordinates[1]--;
             left.sequence = this.sequence + "left,"; 
             //if passengers are dead. then cancel going in that direction.
-            if(left.reduceMap()){
-                //just reduces the number of ship's passengers if possible	
-            }
-            if(left.reduceBox()){
-                //reduce the number of blackbox's health if possible
-            }
+            left.boxescarried = this.boxescarried;
+            left.dead = this.dead;
+            left.passengerstotal = this.passengerstotal;
+            left.reduceMap();
+            left.reduceBox();
             left.performAction();
             //System.out.println(left.co_ordinates[1] + ""+ left.sequence);
             //add the node to the expanded nodes
@@ -147,12 +143,11 @@ public class tNode {
             //increment the x co-ordinate
             right.co_ordinates[1]++;
             right.sequence = this.sequence + "right,"; 
-            if(right.reduceMap()){
-                //just reduces the number of ship's passengers if possible	
-            }
-            if(right.reduceBox()){
-        
-            }
+            right.boxescarried = this.boxescarried;
+            right.dead = this.dead;
+            right.passengerstotal = this.passengerstotal;
+            right.reduceMap();
+            right.reduceBox();
             right.performAction();
             //add the node to the expanded nodes
             //System.out.println(right.co_ordinates[1] + ""+ right.sequence);
@@ -194,10 +189,11 @@ public void pickup(){
     }
 }
 
-public void drop(){
+public synchronized void drop(){
 	String stationString = this.co_ordinates[0] + "," + this.co_ordinates[1];
 	//if I am on a station then drop off the passengers
 	if(this.stations.containsKey(stationString) == true){
+        this.passengerstotal-= this.passengers_carried;
 		this.passengers_carried = 0;
 		this.sequence += "drop,";
 	}
@@ -232,7 +228,12 @@ public void performAction()
     //if I can then I will take the value in there and put it into passengers_carried
 	//could be optimized way better
     if(Split.length > 5){
-        this.passengers_carried = Integer.parseInt(Split[5]);
+        if(Split[5].equals(" ")){
+            this.passengers_carried = 0;
+        }
+        else{
+            this.passengers_carried = Integer.parseInt(Split[5]);
+        }
     }
 	
 
@@ -249,32 +250,6 @@ public void performAction()
         boolean health = true;
         this.stations.put(b0xString, health);
     }
-
-	//2. To string would be the 6th element
-	if(Split.length > 6){
-	if(!(Split[6].equals(" "))){
-
-	//Maybe change it later to character check
-    String[] b0xl0c = Split[6].split(",");
-    //loop through shiploc increment by 3 as each ship has 3 values associated with it
-    for (int i = 0; i < b0xl0c.length; i += 3) {
-        //create a new array to store the co-ordinates of the ship
-        int[] l0c = new int[2];
-        //store the co-ordinates of the ship
-        l0c[0] = Integer.parseInt(b0xl0c[i]);
-        l0c[1] = Integer.parseInt(b0xl0c[i + 1]);
-        //Convert ship array to a string
-        String b0xString = l0c[0] + "," + l0c[1];
-        //store the number of passengers in the ship
-        int health = Integer.parseInt(b0xl0c[i + 2]);
-        //add the ship and its passengers to the hashtable
-        this.blackboxes.put(b0xString, health);
-        //System.out.println(ship[0] + " " + ship[1] + " " + passengers);
-    }
-	}
-
-	}
-
     //from the 2nd elemnt in split add into this co-ordinates
     this.co_ordinates[0] = Integer.parseInt(Split[2].split(",")[0]);
     this.co_ordinates[1] = Integer.parseInt(Split[2].split(",")[1]);
@@ -297,37 +272,77 @@ public void performAction()
         String shipString = ship[0] + "," + ship[1];
         //store the number of passengers in the ship
         int passengers = Integer.parseInt(shipl0c[i + 2]);
+        this.passengerstotal+=passengers;
         //add the ship and its passengers to the hashtable
         this.ships.put(shipString, passengers);
         //System.out.println(ship[0] + " " + ship[1] + " " + passengers);
     }
 	}
+
+    if(Split.length > 6){
+        //Maybe change it later to character check
+        String[] boxStrings = Split[6].split(",");
+        //loop through shiploc increment by 3 as each ship has 3 values associated with it
+        for (int i = 0; i < boxStrings.length; i += 3) {
+            //create a new array to store the co-ordinates of the ship
+            int[] ship = new int[2];
+            //store the co-ordinates of the ship
+            ship[0] = Integer.parseInt(boxStrings[i]);
+            ship[1] = Integer.parseInt(boxStrings[i + 1]);
+            //Convert ship array to a string
+            String shipString = ship[0] + "," + ship[1];
+            //store the number of passengers in the ship
+            int passengers = Integer.parseInt(boxStrings[i + 2]);
+            //add the ship and its passengers to the hashtable
+            this.blackboxes.put(shipString, passengers);
+            //System.out.println(ship[0] + " " + ship[1] + " " + passengers);
+        }
+        }
+
     }
 
 
     //method to return a string representing node elements
-	public String toString(){
-    //3,4 CoastGuardCarry=97 Boat=1,2 Station=0,1 Ship=3,2,Passengers=65;
-    String s = "";
-    s += this.length_width[1] + "," + this.length_width[0] + ";";
-    s  += this.Split[1] + ";";
-    s += this.co_ordinates[0] + "," + this.co_ordinates[1] + ";";
-    s   += this.Split[3] + ";";
-	if(this.ships.size() > 0){
-    for (String ship : this.ships.keySet()) {
-        s += ship.charAt(0) + "," + ship.charAt(2) + "," + this.ships.get(ship) + ",";
-        }
-	}
-	else{
-	s += " ;";
-	}
-    //s += Blackboxes <<==
-	//Check if split is more than 5 before adding passengers carried
-	if(this.Split.length > 5){
-    s += this.Split[5] + ";";
-	}
-    return s;
+    public String toString(){
+        //3,4 CoastGuardCarry=97 Boat=1,2 Station=0,1 Ship=3,2,Passengers=65;
+        String s = "";
+        s += this.length_width[1] + "," + this.length_width[0] + ";";
+        s  += this.Split[1] + ";";
+        s += this.co_ordinates[0] + "," + this.co_ordinates[1] + ";";
+        s   += this.Split[3] + ";";
+            if(this.ships.size() > 0){
+        for (String ship : this.ships.keySet()) {
+            s += ship.charAt(0) + "," + ship.charAt(2) + "," + this.ships.get(ship) + ",";
+            }
+            s = s.substring(0, s.length() - 1);
+            s   += ";";
+            }
+            else{
+            s += " ;";
+            }
+        //Number 3
+        //s += Blackboxes <<==
+            //Check if split is more than 5 before adding passengers carried
+            if(this.passengers_carried > 0){
+                s += this.passengers_carried + ";";
+            }
+            else{
+                s += " ;";
+            }
+           
+            if(this.blackboxes.size() > 0){
+                for (String ship : this.blackboxes.keySet()) {
+                    s += ship.charAt(0) + "," + ship.charAt(2) + "," + this.blackboxes.get(ship) + ",";
+                }
+            //remove the last comma
+            s = s.substring(0, s.length() - 1);
+            s   += ";";
+            }
+            
 
-    }
+        return s;
+    
+        }
+    
 
 }
